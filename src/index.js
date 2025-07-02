@@ -1,44 +1,26 @@
 import './style.css';
 
-// Ключ для хранения состояния
-const STORAGE_KEY = 'dnd-board-state';
+// Инициализация доски и карточек
+const board = document.querySelector('.board');
+const cards = document.querySelectorAll('.card');
 
-// Сохранить состояние
-function saveBoardState(board) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
-}
-
-// Получить состояние
-function loadBoardState() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (data) {
-    return JSON.parse(data);
-  }
-  // Если данных нет, возвращаем пустую доску
-  return {
-    todo: [],
-    inprogress: [],
-    done: []
-  };
-}
-
-let board = loadBoardState();
-
-// После добавления карточки:
-function addCard(column, text) {
-  board[column].push({ text });
-  saveBoardState(board);
-  renderBoard();
-}
-
-// После удаления карточки:
-function deleteCard(column, index) {
-  board[column].splice(index, 1);
-  saveBoardState(board);
-  renderBoard();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  board = loadBoardState();
-  renderBoard();
+// Обработчик начала перетаскивания
+cards.forEach(card => {
+  card.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', card.id);
+  });
 });
+
+// Обработчик перетаскивания на доске
+board.addEventListener('dragover', (e) => {
+  e.preventDefault(); // Разрешить сброс
+});
+
+// Обработчик сброса карточки на доске
+board.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const cardId = e.dataTransfer.getData('text/plain');
+  const card = document.getElementById(cardId);
+  board.appendChild(card); // Перемещаем карточку
+});
+

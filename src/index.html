@@ -5,24 +5,10 @@
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="board">
-    <div class="column" data-column="todo">
-      <h2>To Do</h2>
-      <button class="add-card-btn" data-column="todo">Add another card</button>
-      <div class="cards-container" id="todo"></div>
-    </div>
-    <div class="column" data-column="inprogress">
-      <h2>In Progress</h2>
-      <button class="add-card-btn" data-column="inprogress">Add another card</button>
-      <div class="cards-container" id="inprogress"></div>
-    </div>
-    <div class="column" data-column="done">
-      <h2>Done</h2>
-      <button class="add-card-btn" data-column="done">Add another card</button>
-      <div class="cards-container" id="done"></div>
-    </div>
-  </div>
-
-<script src="index.js"></script>
+<div id="app"></div>
+<div class="board">
+  <div class="card" id="card1" draggable="true">Карточка 1</div>
+  <div class="card" id="card2" draggable="true">Карточка 2</div>
+</div>
 </body>
 </html>
