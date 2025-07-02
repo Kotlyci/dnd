@@ -1,61 +1,114 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
+  background: #f4f5f7;
+  margin: 0;
+  padding: 0;
 }
 
 .board {
   display: flex;
-  gap: 10px;
+  gap: 20px;
+  padding: 40px;
+  justify-content: center;
 }
 
 .column {
-  background-color: #f0f0f0;
-  padding: 10px;
+  background: #ebecf0;
+  border-radius: 6px;
+  padding: 16px;
   width: 300px;
-  border-radius: 5px;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
 }
 
-h2 {
-  margin-top: 0;
-  text-align: center;
+.column-title {
+  font-weight: bold;
+  margin-bottom: 16px;
+  font-size: 18px;
 }
 
-.cards-container {
-  min-height: 50px;
-  flex-grow: 1;
-  padding: 5px;
-  background-color: #fff;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-}
-
-button {
-  margin-top: 10px;
-  padding: 5px;
-  cursor: pointer;
+.cards {
+  flex: 1;
+  min-height: 20px;
 }
 
 .card {
-  background-color: #4CAF50;
-  color: white;
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 3px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px 36px 12px 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   position: relative;
   cursor: grab;
+  transition: box-shadow 0.2s;
+  user-select: none;
 }
 
-.card .delete-icon {
+.card.dragging {
+  opacity: 0.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.cards.dragover {
+  background: #d2e4fc;
+  border-radius: 4px;
+  min-height: 40px;
+}
+
+.delete-btn {
   position: absolute;
-  top: 2px;
-  right: 4px;
-  font-weight: bold;
+  right: 8px;
+  top: 8px;
+  color: #888;
+  font-size: 18px;
   cursor: pointer;
-  display: none;
+  background: none;
+  border: none;
+  outline: none;
 }
 
-.card:hover .delete-icon {
-  display: block;
+.delete-btn:hover {
+  color: #e74c3c;
+}
+
+.add-card-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-card-form input {
+  flex: 1;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.add-card-form button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background: #5aac44;
+  color: #fff;
+  cursor: pointer;
+}
+
+.add-card-form button:hover {
+  background: #519839;
+}
+
+.add-btn {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #5aac44;
+  cursor: pointer;
+  font-size: 15px;
+  text-align: left;
+  padding: 0;
+}
+
+.add-btn:hover {
+  text-decoration: underline;
 }

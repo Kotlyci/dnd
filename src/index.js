@@ -96,9 +96,12 @@ function renderBoard() {
 
     // Кнопка добавления карточки
     const addBtn = document.createElement('button');
+    addBtn.className = 'add-btn';
     addBtn.textContent = 'Add another card';
     addBtn.onclick = () => {
       addBtn.style.display = 'none';
+      const form = document.createElement('div');
+      form.className = 'add-card-form';
       const input = document.createElement('input');
       input.type = 'text';
       input.placeholder = 'Card text';
@@ -111,8 +114,9 @@ function renderBoard() {
           renderBoard();
         }
       };
-      colEl.appendChild(input);
-      colEl.appendChild(confirmBtn);
+      form.appendChild(input);
+      form.appendChild(confirmBtn);
+      colEl.appendChild(form);
       input.focus();
     };
     colEl.appendChild(addBtn);
