@@ -1,0 +1,61 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.board {
+  display: flex;
+  gap: 10px;
+}
+
+.column {
+  background-color: #f0f0f0;
+  padding: 10px;
+  width: 300px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.cards-container {
+  min-height: 50px;
+  flex-grow: 1;
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin-top: 10px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.card {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  position: relative;
+  cursor: grab;
+}
+
+.card .delete-icon {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  display: none;
+}
+
+.card:hover .delete-icon {
+  display: block;
+}
