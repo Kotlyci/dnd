@@ -1,1 +1,3 @@
-[![Node.js CI](https://github.com/Kotlyci/dnd/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Kotlyci/dnd/actions)
+[![Node.js CI]
+(https://github.com/Kotlyci/dnd/actions/workflows/nodejs.yml/badge.svg)]
+(https://github.com/Kotlyci/dnd/actions)
