@@ -23,6 +23,45 @@ function saveBoard(board) {
 }
 
 let board = loadBoard();
+let dragData = null;
+let placeholder = null;
+
+function createCardElement(card, colKey, idx) {
+  const cardEl = document.createElement('div');
+  cardEl.className = 'card';
+  cardEl.draggable = true;
+  cardEl.textContent = card.text;
+
+  // Крестик для удаления (появляется только при наведении)
+  const delBtn = document.createElement('span');
+  delBtn.className = 'delete-btn';
+  delBtn.textContent = '×';
+  delBtn.onclick = (e) => {
+    e.stopPropagation();
+    board[colKey].splice(idx, 1);
+    saveBoard(board);
+    renderBoard();
+  };
+  cardEl.append(delBtn);
+
+  // Drag events
+  cardEl.addEventListener('dragstart', (e) => {
+    dragData = { fromCol: colKey, fromIdx: idx };
+    setTimeout(() => cardEl.classList.add('dragging'), 0);
+    placeholder = document.createElement('div');
+    placeholder.className = 'card placeholder';
+    placeholder.style.height = `${cardEl.offsetHeight}px`;
+  });
+
+  cardEl.addEventListener('dragend', () => {
+    cardEl.classList.remove('dragging');
+    dragData = null;
+    placeholder = null;
+    renderBoard();
+  });
+
+  return cardEl;
+}
 
 function renderBoard() {
   const app = document.getElementById('app');
@@ -38,61 +77,63 @@ function renderBoard() {
     const title = document.createElement('div');
     title.className = 'column-title';
     title.textContent = col.title;
-    colEl.appendChild(title);
+    colEl.append(title);
 
     const cardsEl = document.createElement('div');
     cardsEl.className = 'cards';
 
-    board[col.key].forEach((card, idx) => {
-      const cardEl = document.createElement('div');
-      cardEl.className = 'card';
-      cardEl.draggable = true;
-      cardEl.textContent = card.text;
-
-      // Крестик для удаления
-      const delBtn = document.createElement('span');
-      delBtn.className = 'delete-btn';
-      delBtn.textContent = '×';
-      delBtn.onclick = (e) => {
-        e.stopPropagation();
-        board[col.key].splice(idx, 1);
-        saveBoard(board);
-        renderBoard();
-      };
-      cardEl.appendChild(delBtn);
-
-      // Drag events
-      cardEl.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({ fromCol: col.key, fromIdx: idx }));
-        setTimeout(() => cardEl.classList.add('dragging'), 0);
-      });
-      cardEl.addEventListener('dragend', () => {
-        cardEl.classList.remove('dragging');
-      });
-
-      cardsEl.appendChild(cardEl);
-    });
-
-    // Dragover для вставки карточки
+    // Dragover/drop для пустой колонки
     cardsEl.addEventListener('dragover', (e) => {
       e.preventDefault();
-      cardsEl.classList.add('dragover');
+      if (!dragData) return;
+      // Если нет карточек, просто добавляем placeholder
+      if (!cardsEl.querySelector('.placeholder')) {
+        cardsEl.append(placeholder);
+      }
     });
-    cardsEl.addEventListener('dragleave', () => {
-      cardsEl.classList.remove('dragover');
-    });
+
     cardsEl.addEventListener('drop', (e) => {
       e.preventDefault();
-      cardsEl.classList.remove('dragover');
-      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-      if (data.fromCol === col.key) return; // не перемещаем в ту же колонку
-      const card = board[data.fromCol].splice(data.fromIdx, 1)[0];
-      board[col.key].push(card);
+      if (!dragData) return;
+      let toIdx = Array.from(cardsEl.children).indexOf(placeholder);
+      if (toIdx === -1) toIdx = board[col.key].length;
+      const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
+      board[col.key].splice(toIdx, 0, card);
       saveBoard(board);
+      dragData = null;
+      placeholder = null;
       renderBoard();
     });
 
-    colEl.appendChild(cardsEl);
+    cardsEl.addEventListener('dragleave', (e) => {
+      // Удаляем placeholder только если курсор ушёл за пределы cardsEl
+      if (e.relatedTarget && !cardsEl.contains(e.relatedTarget)) {
+        if (placeholder && cardsEl.contains(placeholder)) {
+          cardsEl.removeChild(placeholder);
+        }
+      }
+    });
+
+    board[col.key].forEach((card, idx) => {
+      const cardEl = createCardElement(card, col.key, idx);
+
+      // Dragover для каждой карточки
+      cardEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (!dragData) return;
+        const bounding = cardEl.getBoundingClientRect();
+        const offset = e.clientY - bounding.top;
+        const insertBefore = offset < bounding.height / 2;
+        cardsEl.querySelectorAll('.placeholder').forEach(p => p.remove());
+        if (insertBefore) {
+          cardsEl.insertBefore(placeholder, cardEl);
+        } else {
+          cardsEl.insertBefore(placeholder, cardEl.nextSibling);
+        }
+      });cardsEl.append(cardEl);
+    });
+
+    colEl.append(cardsEl);
 
     // Кнопка добавления карточки
     const addBtn = document.createElement('button');
@@ -114,17 +155,17 @@ function renderBoard() {
           renderBoard();
         }
       };
-      form.appendChild(input);
-      form.appendChild(confirmBtn);
-      colEl.appendChild(form);
+      form.append(input);
+      form.append(confirmBtn);
+      colEl.append(form);
       input.focus();
     };
-    colEl.appendChild(addBtn);
+    colEl.append(addBtn);
 
-    boardEl.appendChild(colEl);
+    boardEl.append(colEl);
   });
 
-  app.appendChild(boardEl);
+  app.append(boardEl);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

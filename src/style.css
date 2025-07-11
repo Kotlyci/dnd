@@ -112,3 +112,30 @@ body {
 .add-btn:hover {
   text-decoration: underline;
 }
+
+card .delete-btn {
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-size: 18px;
+  z-index: 2;
+}
+.card:hover .delete-btn {
+  opacity: 1;
+}
+.card {
+  position: relative;
+}
+.card.placeholder {
+  background: #e0e0e0;
+  border: 2px dashed #aaa;
+  min-height: 40px;
+  margin: 4px 0;
+}
+
+.card .delete-btn { opacity: 0; }
+
+.card:hover .delete-btn { opacity: 1; }
