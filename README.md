@@ -1,2 +1,2 @@
 [![Deploy to GitHub Pages](https://github.com/Kotlyci/dnd/actions/workflows/deploy.yml/badge.svg)](https://github.com/Kotlyci/dnd/actions/workflows/deploy.yml)
-[Посмотреть демо на GitHub Pages](https://Kotlyci.github.io/dnd)
+[Посмотреть демо на GitHub Pages](https://Kotlyci.github.io/dnd/)
