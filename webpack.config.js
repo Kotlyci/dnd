@@ -35,5 +35,5 @@ module.exports = {
     static: './dist',
     open: true,
   },
-  mode: 'development',
+  mode: 'production',
 };
