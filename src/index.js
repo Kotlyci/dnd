@@ -44,13 +44,13 @@ function createCardElement(card, colKey, idx) {
   };
   cardEl.append(delBtn);
 
-  // Drag events
   cardEl.addEventListener('dragstart', (e) => {
     dragData = { fromCol: colKey, fromIdx: idx };
     setTimeout(() => cardEl.classList.add('dragging'), 0);
     placeholder = document.createElement('div');
     placeholder.className = 'card placeholder';
     placeholder.style.height = `${cardEl.offsetHeight}px`;
+    placeholder.style.boxSizing = 'border-box';
   });
 
   cardEl.addEventListener('dragend', () => {
@@ -130,7 +130,8 @@ function renderBoard() {
         } else {
           cardsEl.insertBefore(placeholder, cardEl.nextSibling);
         }
-      });cardsEl.append(cardEl);
+      });
+      cardsEl.append(cardEl);
     });
 
     colEl.append(cardsEl);
