@@ -32,7 +32,7 @@ function createCardElement(card, colKey, idx) {
   cardEl.draggable = true;
   cardEl.textContent = card.text;
 
-  // Крестик для удаления (появляется только при наведении)
+  // Крестик для удаления
   const delBtn = document.createElement('span');
   delBtn.className = 'delete-btn';
   delBtn.textContent = '×';
@@ -45,16 +45,22 @@ function createCardElement(card, colKey, idx) {
   cardEl.append(delBtn);
 
   cardEl.addEventListener('dragstart', (e) => {
-    dragData = { fromCol: colKey, fromIdx: idx };
-    setTimeout(() => cardEl.classList.add('dragging'), 0);
+    dragData = { fromCol: colKey, fromIdx: idx, card };
+    // Создаём плейсхолдер нужной высоты
     placeholder = document.createElement('div');
     placeholder.className = 'card placeholder';
     placeholder.style.height = `${cardEl.offsetHeight}px`;
     placeholder.style.boxSizing = 'border-box';
+    // Для эффекта \"призрака\":
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+    // Скрываем оригинал карточки (он исчезнет из списка при рендере)
+    setTimeout(() => {
+      renderBoard();
+    }, 0);
   });
 
   cardEl.addEventListener('dragend', () => {
-    cardEl.classList.remove('dragging');
     dragData = null;
     placeholder = null;
     renderBoard();
@@ -114,11 +120,12 @@ function renderBoard() {
         renderBoard();
         return;
       }
-      const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
+            const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
       // Если перемещаем внутри той же колонки и удалили карточку выше позиции вставки, уменьшаем индекс вставки
       if (dragData.fromCol === col.key && dragData.fromIdx < toIdx) {
         toIdx--;
-      }board[col.key].splice(toIdx, 0, card);
+      }
+      board[col.key].splice(toIdx, 0, card);
       saveBoard(board);
       dragData = null;
       placeholder = null;
@@ -134,7 +141,21 @@ function renderBoard() {
       }
     });
 
+    // Формируем список карточек, скрывая перетаскиваемую
     board[col.key].forEach((card, idx) => {
+      // Если сейчас идёт перетаскивание этой карточки — вместо неё вставляем placeholder
+      if (
+        dragData &&
+        dragData.fromCol === col.key &&
+        dragData.fromIdx === idx
+      ) {
+        // Вставляем placeholder только если в колонке больше одной карточки
+        if (board[col.key].length > 1) {
+          cardsEl.append(placeholder);
+        }
+        return;
+      }
+
       const cardEl = createCardElement(card, col.key, idx);
 
       // Dragover для каждой карточки
