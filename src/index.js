@@ -86,9 +86,19 @@ function renderBoard() {
     cardsEl.addEventListener('dragover', (e) => {
       e.preventDefault();
       if (!dragData) return;
-      // Если нет карточек, просто добавляем placeholder
-      if (!cardsEl.querySelector('.placeholder')) {
-        cardsEl.append(placeholder);
+
+      // Если перетаскиваем в другую колонку
+      if (dragData.fromCol !== col.key) {
+        if (!cardsEl.querySelector('.placeholder')) {
+          cardsEl.append(placeholder);
+        }
+      } else {
+        // Если в колонке только одна карточка, не показываем placeholder
+        if (board[col.key].length === 1) return;
+        // Если placeholder уже есть, не добавляем
+        if (!cardsEl.querySelector('.placeholder')) {
+          cardsEl.append(placeholder);
+        }
       }
     });
 
@@ -97,8 +107,18 @@ function renderBoard() {
       if (!dragData) return;
       let toIdx = Array.from(cardsEl.children).indexOf(placeholder);
       if (toIdx === -1) toIdx = board[col.key].length;
+      // Если перемещаем внутри той же колонки и позиция не меняется, ничего не делаем
+      if (dragData.fromCol === col.key && (toIdx === dragData.fromIdx || toIdx === dragData.fromIdx + 1)) {
+        dragData = null;
+        placeholder = null;
+        renderBoard();
+        return;
+      }
       const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
-      board[col.key].splice(toIdx, 0, card);
+      // Если перемещаем внутри той же колонки и удалили карточку выше позиции вставки, уменьшаем индекс вставки
+      if (dragData.fromCol === col.key && dragData.fromIdx < toIdx) {
+        toIdx--;
+      }board[col.key].splice(toIdx, 0, card);
       saveBoard(board);
       dragData = null;
       placeholder = null;
@@ -121,9 +141,23 @@ function renderBoard() {
       cardEl.addEventListener('dragover', (e) => {
         e.preventDefault();
         if (!dragData) return;
+
+        // Если в колонке только одна карточка и перемещаем внутри неё — не показываем placeholder
+        if (dragData.fromCol === col.key && board[col.key].length === 1) return;
+
+        // Не даём вставить на своё же место
+        if (dragData.fromCol === col.key && (idx === dragData.fromIdx || idx === dragData.fromIdx + 1)) return;
+
         const bounding = cardEl.getBoundingClientRect();
         const offset = e.clientY - bounding.top;
         const insertBefore = offset < bounding.height / 2;
+
+        // Не даём вставить placeholder на своё же место
+        if (dragData.fromCol === col.key) {
+          if (insertBefore && idx === dragData.fromIdx) return;
+          if (!insertBefore && idx === dragData.fromIdx) return;
+        }
+
         cardsEl.querySelectorAll('.placeholder').forEach(p => p.remove());
         if (insertBefore) {
           cardsEl.insertBefore(placeholder, cardEl);
@@ -131,6 +165,7 @@ function renderBoard() {
           cardsEl.insertBefore(placeholder, cardEl.nextSibling);
         }
       });
+
       cardsEl.append(cardEl);
     });
 
