@@ -50,10 +50,9 @@ function createCardElement(card, colKey, idx) {
     placeholder.className = 'card placeholder';
     placeholder.style.height = `${cardEl.offsetHeight}px`;
     placeholder.style.boxSizing = 'border-box';
-    // Для эффекта \"призрака\":
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', '');
-    // Скрываем оригинал карточки (он исчезнет из списка при рендере)
+    // Перерисовываем доску, чтобы скрыть оригинал карточки
     setTimeout(() => {
       renderBoard();
     }, 0);
@@ -123,13 +122,13 @@ function renderBoard() {
       }
       board[col.key].splice(toIdx, 0, card);
       saveBoard(board);
-      dragData = null;
+            dragData = null;
       placeholder = null;
       renderBoard();
     });
 
     cardsEl.addEventListener('dragleave', (e) => {
-            if (e.relatedTarget && !cardsEl.contains(e.relatedTarget)) {
+      if (e.relatedTarget && !cardsEl.contains(e.relatedTarget)) {
         if (placeholder && cardsEl.contains(placeholder)) {
           cardsEl.removeChild(placeholder);
         }
