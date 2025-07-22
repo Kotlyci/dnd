@@ -32,7 +32,7 @@ function createCardElement(card, colKey, idx) {
   cardEl.draggable = true;
   cardEl.textContent = card.text;
 
-  // Крестик для удаления
+  // Крестик для удаления (появляется только при наведении)
   const delBtn = document.createElement('span');
   delBtn.className = 'delete-btn';
   delBtn.textContent = '×';
@@ -46,7 +46,6 @@ function createCardElement(card, colKey, idx) {
 
   cardEl.addEventListener('dragstart', (e) => {
     dragData = { fromCol: colKey, fromIdx: idx, card };
-    // Создаём плейсхолдер нужной высоты
     placeholder = document.createElement('div');
     placeholder.className = 'card placeholder';
     placeholder.style.height = `${cardEl.offsetHeight}px`;
@@ -88,7 +87,6 @@ function renderBoard() {
     const cardsEl = document.createElement('div');
     cardsEl.className = 'cards';
 
-    // Dragover/drop для пустой колонки
     cardsEl.addEventListener('dragover', (e) => {
       e.preventDefault();
       if (!dragData) return;
@@ -101,7 +99,6 @@ function renderBoard() {
       } else {
         // Если в колонке только одна карточка, не показываем placeholder
         if (board[col.key].length === 1) return;
-        // Если placeholder уже есть, не добавляем
         if (!cardsEl.querySelector('.placeholder')) {
           cardsEl.append(placeholder);
         }
@@ -120,8 +117,7 @@ function renderBoard() {
         renderBoard();
         return;
       }
-            const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
-      // Если перемещаем внутри той же колонки и удалили карточку выше позиции вставки, уменьшаем индекс вставки
+      const [card] = board[dragData.fromCol].splice(dragData.fromIdx, 1);
       if (dragData.fromCol === col.key && dragData.fromIdx < toIdx) {
         toIdx--;
       }
@@ -133,8 +129,7 @@ function renderBoard() {
     });
 
     cardsEl.addEventListener('dragleave', (e) => {
-      // Удаляем placeholder только если курсор ушёл за пределы cardsEl
-      if (e.relatedTarget && !cardsEl.contains(e.relatedTarget)) {
+            if (e.relatedTarget && !cardsEl.contains(e.relatedTarget)) {
         if (placeholder && cardsEl.contains(placeholder)) {
           cardsEl.removeChild(placeholder);
         }
